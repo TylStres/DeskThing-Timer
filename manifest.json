@@ -1,0 +1,18 @@
+{
+  "id": "timer",
+  "isAudioSource": false,
+  "isWebApp": true,
+  "isLocalApp": false,
+  "requires": [],
+  "label": "Timer App",
+  "version": "v0.7.0",
+  "description": "Displays a timer",
+  "author": "TheNordicGoat",
+  "platforms": [
+    "windows",
+    "macos",
+    "linux"
+  ],
+  "homepage": "https://github.com/TylStres/DeskThing-Timer",
+  "repository": "https://github.com/TylStres/DeskThing-Timer"
+}

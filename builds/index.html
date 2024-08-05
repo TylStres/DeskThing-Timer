@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=10.0">
+    <title>IFrame</title>
+    <audio id="timer-end-sound" src="./alert.mp3"></audio>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #000000;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #timer-display {
+            font-size: 150px;
+            color: #ffffff;
+            font-family: serif;
+            margin-bottom: 5%;
+            margin-top: 0px;
+        }
+
+        .button-container {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+
+        button {
+            font-size: 30px;
+            margin: 20px;
+            padding: 10px 20px;
+            border: none;
+            background-color: #4CAF50;
+            border-radius: 10px;
+            color: #000000;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <p id="timer-display">00:00</p>
+        <div class="button_container">
+            <button id="start-pause-btn">Start</button>
+            <button id="reset-btn">Reset</button>
+        </div>
+    </div>
+
+    <script>
+        const timerDisplay = document.getElementById('timer-display');
+        const startPauseBtn = document.getElementById('start-pause-btn');
+        const resetBtn = document.getElementById('reset-btn');
+        const timerEndSound = document.getElementById('timer-end-sound');
+
+        let timer;
+        let duration = 0; // In minutes
+        let isPaused = false;
+
+        function formatTime(time) {
+            if (time <= 0) {
+                return '00:00';
+            }
+
+            const minutes = Math.floor(Math.abs(time));
+            const seconds = Math.round((Math.abs(time) - minutes) * 60);
+            return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        }
+
+        function playTimerEndSound() {
+            timerEndSound.play();
+        }
+
+        function flashScreen() {
+            document.body.style.backgroundColor = 'white';
+            setTimeout(() => {
+                document.body.style.backgroundColor = '#000000';
+            }, 100); // Adjust flash duration as needed
+        }
+
+        function flashFiveTimes() {
+            for (let i = 0; i < 5; i++) {
+                flashScreen();
+                setTimeout(flashScreen, 200); // Increased delay between flashes
+            }
+        }
+
+        function updateTimer() {
+            if (!isPaused) {
+                duration -= 1 / 60;
+            }
+            timerDisplay.textContent = formatTime(duration);
+            if (duration <= 0) {
+                clearInterval(timer);
+                startPauseBtn.textContent = 'Start';
+                isPaused = true; // Pause after timer ends
+                playTimerEndSound(); // For use in chrome
+                flashFiveTimes();
+                sendMessageToParent(); // For DT
+            }
+
+        }
+
+        // This is how you send and receive messages from the server !!
+        window.addEventListener('message', (event) => {
+            // Handle incoming messages from the parent
+            console.log('Received message from parent:', event);
+            // Add your logic to handle the received data here
+
+            // Example: Sending a response back to the parent
+            event.source.postMessage({ type: 'RESPONSE_ACTION', payload: 'Response data from iframe' }, event.origin);
+        });
+
+        const payload = {
+
+            type: 'message',
+            request: 'play-sound',
+        }
+
+        function sendMessageToParent() {
+            window.parent.postMessage({ type: 'IFRAME_ACTION', payload: payload }, '*'); // Use a specific origin if possible for security
+        }
+
+        function startPauseTimer() {
+            if (!timer) {
+                timer = setInterval(updateTimer, 1000);
+                startPauseBtn.textContent = 'Pause';
+            } else {
+                isPaused = !isPaused;
+                startPauseBtn.textContent = isPaused ? 'Resume' : 'Pause';
+            }
+        }
+
+        function resetTimer() {
+            clearInterval(timer); // Clear any existing interval
+            timer = null; // Reset timer variable
+            duration = 0;
+            timerDisplay.textContent = '00:00';
+            startPauseBtn.textContent = 'Start';
+            isPaused = false;
+        }
+
+        startPauseBtn.addEventListener('click', startPauseTimer);
+        resetBtn.addEventListener('click', resetTimer);
+
+        document.addEventListener('wheel', (event) => {
+            duration += event.deltaX > 0 || event.deltaY < 0 ? 1 : -1;
+            duration = Math.max(0, duration);
+            timerDisplay.textContent = formatTime(duration);
+        });
+
+    </script>
+</body>
+
+</html>
