@@ -3,7 +3,7 @@
   "isAudioSource": false,
   "isWebApp": true,
   "isLocalApp": false,
-  "requires": [],
+  "requires": ["utility"],
   "label": "Timer App",
   "version": "v0.7.0",
   "description": "Displays a timer",

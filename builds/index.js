@@ -11,38 +11,68 @@ var require_timer = __commonJS({
     var timerHandler2 = class {
       constructor(sendDataToMainFn) {
         this.sendDataToMainFn = sendDataToMainFn;
+        this.audio_url = void 0;
         this.settings = {
-          "auto_switch_view": {
-            "value": "true",
-            "label": "Auto Focus",
+          // "auto_switch_view": {
+          //   "value": 'false', //changed to false. See if this breaks setting time
+          //   "label": "Auto Focus",
+          //   "options": [
+          //     {
+          //       "value": 'false',
+          //       "label": "Disabled"
+          //     },
+          //     {
+          //       "value": 'true',
+          //       "label": "Enabled"
+          //     },
+          //   ]
+          // },
+          // "notifications": {
+          //   "value": 'true',
+          //   "label": "Notifications",
+          //   "options": [
+          //     {
+          //       "value": 'false',
+          //       "label": "Disabled"
+          //     },
+          //     {
+          //       "value": 'true',
+          //       "label": "Enabled"
+          //     },
+          //   ]
+          // },
+          "screen_flash": {
+            "value": "false",
+            "label": "Screen Flash",
             "options": [
               {
-                "value": "false",
-                "label": "Disabled"
+                "value": "true",
+                "label": "ON"
               },
               {
-                "value": "true",
-                "label": "Enabled"
+                "value": "false",
+                "label": "off"
               }
             ]
           },
-          "notifications": {
+          "alert_sound": {
             "value": "true",
-            "label": "Notifications",
+            "label": "Alert Sound",
             "options": [
               {
-                "value": "false",
-                "label": "Disabled"
+                "value": "true",
+                "label": "ON"
               },
               {
-                "value": "true",
-                "label": "Enabled"
+                "value": "false",
+                "label": "off"
               }
             ]
           }
         };
         const manifestPath = path2.join(__dirname, "manifest.json");
         this.manifest = JSON.parse(fs.readFileSync(manifestPath, "utf-8"));
+        this.sendLog("Manifest loaded:" + this.manifest);
       }
       // utility function to send data to and from the server (logs or errors - errors prompt the user. You can also have 'message' which will have a gray message on the desktop UI)
       async sendLog(message) {
@@ -139,12 +169,14 @@ async function onMessageFromMain(event, ...args) {
         }
         break;
       case "data":
-        if (args[0] === "play-sound") {
-          try {
-          } catch (error) {
-            console.error("Error playing sound:", error);
+        timer.sendDataToMainFn("get")["flash_screen", "alert_sound"].forEach((key) => {
+          if (args[0].settings?.[key]) {
+            timer.settings[key] = args[0].settings[key];
+          } else {
+            const settings = { settings: timer.settings };
+            timer.sendDataToMainFn("add", settings);
           }
-        }
+        });
         break;
       case "callback-data":
         break;
@@ -187,16 +219,6 @@ var handleSet = async (...args) => {
   let response;
   switch (args[0].toString()) {
     case "update_setting":
-      if (args[1] != null) {
-        const { setting, value } = args[1];
-        timer.settings[setting].value = value;
-        timer.sendLog("New Setting", timer.settings);
-        const settings = { settings: timer.settings };
-        timer.sendDataToMainFn("add", settings);
-      } else {
-        timer.sendError("No args provided");
-        response = "No args provided";
-      }
       break;
     default:
       response = timer.handleCommand("set", ...args);

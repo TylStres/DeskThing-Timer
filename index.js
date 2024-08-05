@@ -47,13 +47,28 @@ async function onMessageFromMain(event, ...args) {
         break
 
       case 'data':
-        if (args[0] === 'play-sound') {
-          try {
+        timer.sendDataToMainFn('get')
+        // console.log('Updating local settings', ...args)
+        // // Switch over the two settings that exist in the class
+        // ['flash_screen', 'alert_sound'].forEach(key => {
+        //   if (args[0].settings?.[key]) {
+        //     // Updating the setting
+        //     timer.settings[key] = args[0].settings[key];
+        //   } else {
+        //     const settings = { settings: timer.settings };
+        //     timer.sendDataToMainFn('add', settings);
+        //   }
+        // });
 
-          } catch (error) {
-            console.error('Error playing sound:', error);
+        ['flash_screen', 'alert_sound'].forEach(key => {
+          if (args[0].settings?.[key]) {
+            timer.settings[key] = args[0].settings[key];
+          } else {
+            const settings = { settings: timer.settings };
+            timer.sendDataToMainFn('add', settings);
           }
-        }
+        });
+
         break
 
       case 'callback-data':
@@ -117,17 +132,17 @@ const handleSet = async (...args) => {
     // REQUIRED - Wil be sent whenever settings are updated
     case 'update_setting':
       // Ensure they exist
-      if (args[1] != null) {
-        const { setting, value } = args[1];
-        timer.settings[setting].value = value
+      // if (args[1] != null) {
+      //   const { setting, value } = args[1];
+      //   timer.settings[setting].value = value
 
-        timer.sendLog('New Setting', timer.settings)
-        const settings = { settings: timer.settings }
-        timer.sendDataToMainFn('add', settings)
-      } else {
-        timer.sendError('No args provided')
-        response = 'No args provided'
-      }
+      //   timer.sendLog('New Setting', timer.settings)
+      //   const settings = { settings: timer.settings }
+      //   timer.sendDataToMainFn('add', settings)
+      // } else {
+      //   timer.sendError('No args provided')
+      //   response = 'No args provided'
+      // }
       break
     default:
       response = timer.handleCommand('set', ...args)
