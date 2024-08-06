@@ -13,62 +13,62 @@ var require_timer = __commonJS({
         this.sendDataToMainFn = sendDataToMainFn;
         this.audio_url = void 0;
         this.settings = {
-          // "auto_switch_view": {
-          //   "value": 'false', //changed to false. See if this breaks setting time
-          //   "label": "Auto Focus",
-          //   "options": [
-          //     {
-          //       "value": 'false',
-          //       "label": "Disabled"
-          //     },
-          //     {
-          //       "value": 'true',
-          //       "label": "Enabled"
-          //     },
-          //   ]
-          // },
-          // "notifications": {
-          //   "value": 'true',
-          //   "label": "Notifications",
-          //   "options": [
-          //     {
-          //       "value": 'false',
-          //       "label": "Disabled"
-          //     },
-          //     {
-          //       "value": 'true',
-          //       "label": "Enabled"
-          //     },
-          //   ]
-          // },
-          "screen_flash": {
-            "value": "false",
-            "label": "Screen Flash",
+          "auto_switch_view": {
+            "value": "true",
+            "label": "Auto Focus",
             "options": [
               {
-                "value": "true",
-                "label": "ON"
+                "value": "false",
+                "label": "Disabled"
               },
               {
-                "value": "false",
-                "label": "off"
+                "value": "true",
+                "label": "Enabled"
               }
             ]
           },
-          "alert_sound": {
+          "notifications": {
             "value": "true",
-            "label": "Alert Sound",
+            "label": "Notifications",
             "options": [
               {
-                "value": "true",
-                "label": "ON"
+                "value": "false",
+                "label": "Disabled"
               },
               {
-                "value": "false",
-                "label": "off"
+                "value": "true",
+                "label": "Enabled"
               }
             ]
           }
+          // "screen_flash": {
+          //   "value": 'false',
+          //   "label": "Screen Flash",
+          //   "options": [
+          //     {
+          //       "value": 'true',
+          //       "label": "ON"
+          //     },
+          //     {
+          //       "value": 'false',
+          //       "label": "off"
+          //     },
+          //   ]        
+          // },
+          // "alert_sound": {
+          //   "value": 'true',
+          //   "label": "Alert Sound",
+          //   "options": [
+          //     {
+          //       "value": 'true',
+          //       "label": "ON"
+          //     },
+          //     {
+          //       "value": 'false',
+          //       "label": "off"
+          //     },
+          //   ]        
+          // }
         };
         const manifestPath = path2.join(__dirname, "manifest.json");
         this.manifest = JSON.parse(fs.readFileSync(manifestPath, "utf-8"));
@@ -169,14 +169,17 @@ async function onMessageFromMain(event, ...args) {
         }
         break;
       case "data":
-        timer.sendDataToMainFn("get")["flash_screen", "alert_sound"].forEach((key) => {
-          if (args[0].settings?.[key]) {
-            timer.settings[key] = args[0].settings[key];
-          } else {
-            const settings = { settings: timer.settings };
-            timer.sendDataToMainFn("add", settings);
-          }
-        });
+        if (args[0].settings) {
+          ["notifications", "auto_switch_view"].forEach((key) => {
+            if (args[0].settings?.[key]) {
+              timer.settings[key] = args[0].settings[key];
+            }
+          });
+        }
+        const data = {
+          settings: timer.settings
+        };
+        timer.sendDataToMainFn("add", data);
         break;
       case "callback-data":
         break;
@@ -219,6 +222,16 @@ var handleSet = async (...args) => {
   let response;
   switch (args[0].toString()) {
     case "update_setting":
+      if (args[1] != null) {
+        const { setting, value } = args[1];
+        timer.settings[setting].value = value;
+        timer.sendLog("New Setting", timer.settings);
+        const settings = { settings: timer.settings };
+        timer.sendDataToMainFn("add", settings);
+      } else {
+        timer.sendError("No args provided");
+        response = "No args provided";
+      }
       break;
     default:
       response = timer.handleCommand("set", ...args);

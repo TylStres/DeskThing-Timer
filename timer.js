@@ -9,62 +9,62 @@ class timerHandler {
     
     // Settings structure - must match this 
     this.settings = {
-      // "auto_switch_view": {
-      //   "value": 'false', //changed to false. See if this breaks setting time
-      //   "label": "Auto Focus",
-      //   "options": [
-      //     {
-      //       "value": 'false',
-      //       "label": "Disabled"
-      //     },
-      //     {
-      //       "value": 'true',
-      //       "label": "Enabled"
-      //     },
-      //   ]
-      // },
-      // "notifications": {
-      //   "value": 'true',
-      //   "label": "Notifications",
-      //   "options": [
-      //     {
-      //       "value": 'false',
-      //       "label": "Disabled"
-      //     },
-      //     {
-      //       "value": 'true',
-      //       "label": "Enabled"
-      //     },
-      //   ]
-      // },
-      "screen_flash": {
-        "value": 'false',
-        "label": "Screen Flash",
+      "auto_switch_view": {
+        "value": 'true', 
+        "label": "Auto Focus",
         "options": [
           {
-            "value": 'true',
-            "label": "ON"
+            "value": 'false',
+            "label": "Disabled"
           },
           {
-            "value": 'false',
-            "label": "off"
+            "value": 'true',
+            "label": "Enabled"
           },
-        ]        
+        ]
       },
-      "alert_sound": {
+      "notifications": {
         "value": 'true',
-        "label": "Alert Sound",
+        "label": "Notifications",
         "options": [
           {
-            "value": 'true',
-            "label": "ON"
+            "value": 'false',
+            "label": "Disabled"
           },
           {
-            "value": 'false',
-            "label": "off"
+            "value": 'true',
+            "label": "Enabled"
           },
-        ]        
-      }
+        ]
+      },
+      // "screen_flash": {
+      //   "value": 'false',
+      //   "label": "Screen Flash",
+      //   "options": [
+      //     {
+      //       "value": 'true',
+      //       "label": "ON"
+      //     },
+      //     {
+      //       "value": 'false',
+      //       "label": "off"
+      //     },
+      //   ]        
+      // },
+      // "alert_sound": {
+      //   "value": 'true',
+      //   "label": "Alert Sound",
+      //   "options": [
+      //     {
+      //       "value": 'true',
+      //       "label": "ON"
+      //     },
+      //     {
+      //       "value": 'false',
+      //       "label": "off"
+      //     },
+      //   ]        
+      // }
     };
 
     const manifestPath = path.join(__dirname, 'manifest.json');
