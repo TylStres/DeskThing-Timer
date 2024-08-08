@@ -2,7 +2,7 @@
 const path = require('path');
 const timerHandler = require('./timer.js');
 const sound = require("sound-play");
-const filePath = path.resolve(__dirname, 'alert.mp3');
+const filePath = path.resolve(__dirname, 'alert.mp3'); //Doesnt handle spaces in directory
 
 let timer
 
@@ -39,7 +39,7 @@ async function onMessageFromMain(event, ...args) {
         // Disabled for conciseness
         if (args[0] === 'play-sound') {
           try {
-            sound.play(filePath, 1)
+            sound.play(`"${filePath}"`, 1) // Attempts to handle spaces 
           } catch (error) {
             console.error('Error playing sound:', error);
           }
@@ -47,22 +47,22 @@ async function onMessageFromMain(event, ...args) {
         break
 
       case 'data':
-        // Switch over the two settings that exist in the class
-        if (args[0].settings) {
-          // Switch over the two settings that exist in the class
-          ['notifications', 'auto_switch_view'].forEach(key => {
-            if (args[0].settings?.[key]) {
-              // Updating the setting
-              timer.settings[key] = args[0].settings[key];
-            }
-          });
-        }
+        // // Switch over the two settings that exist in the class
+        // if (args[0].settings) {
+        //   // Switch over the two settings that exist in the class
+        //   ['notifications', 'auto_switch_view'].forEach(key => {
+        //     if (args[0].settings?.[key]) {
+        //       // Updating the setting
+        //       timer.settings[key] = args[0].settings[key];
+        //     }
+        //   });
+        // }
 
-        const data = {
-          settings: timer.settings
-        }
+        // const data = {
+        //   settings: timer.settings
+        // }
 
-        timer.sendDataToMainFn('add', data)
+        // timer.sendDataToMainFn('add', data)
         break
 
       case 'callback-data':
@@ -126,17 +126,17 @@ const handleSet = async (...args) => {
     // REQUIRED - Wil be sent whenever settings are updated
     case 'update_setting':
       // Ensure they exist
-      if (args[1] != null) {
-        const { setting, value } = args[1];
-        timer.settings[setting].value = value
+      // if (args[1] != null) {
+      //   const { setting, value } = args[1];
+      //   timer.settings[setting].value = value
 
-        timer.sendLog('New Setting', timer.settings)
-        const settings = { settings: timer.settings }
-        timer.sendDataToMainFn('add', settings)
-      } else {
-        timer.sendError('No args provided')
-        response = 'No args provided'
-      }
+      //   timer.sendLog('New Setting', timer.settings)
+      //   const settings = { settings: timer.settings }
+      //   timer.sendDataToMainFn('add', settings)
+      // } else {
+      //   timer.sendError('No args provided')
+      //   response = 'No args provided'
+      // }
       break
     default:
       response = timer.handleCommand('set', ...args)
