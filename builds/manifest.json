@@ -5,7 +5,7 @@
   "isLocalApp": false,
   "requires": [],
   "label": "Timer App",
-  "version": "v0.7.0",
+  "version": "v0.7.1",
   "description": "Displays a timer",
   "author": "TheNordicGoat",
   "platforms": [

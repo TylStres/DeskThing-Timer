@@ -162,24 +162,20 @@ async function onMessageFromMain(event, ...args) {
       case "message":
         if (args[0] === "play-sound") {
           try {
-            sound.play(filePath, 1);
+            sound.play(`"${filePath}"`, 1);
+          } catch (error) {
+            console.error("Error playing sound:", error);
+          }
+        }
+        if (args[0] === "start") {
+          try {
+            sound.play(`"${filePath}"`, 1);
           } catch (error) {
             console.error("Error playing sound:", error);
           }
         }
         break;
       case "data":
-        if (args[0].settings) {
-          ["notifications", "auto_switch_view"].forEach((key) => {
-            if (args[0].settings?.[key]) {
-              timer.settings[key] = args[0].settings[key];
-            }
-          });
-        }
-        const data = {
-          settings: timer.settings
-        };
-        timer.sendDataToMainFn("add", data);
         break;
       case "callback-data":
         break;
@@ -222,16 +218,6 @@ var handleSet = async (...args) => {
   let response;
   switch (args[0].toString()) {
     case "update_setting":
-      if (args[1] != null) {
-        const { setting, value } = args[1];
-        timer.settings[setting].value = value;
-        timer.sendLog("New Setting", timer.settings);
-        const settings = { settings: timer.settings };
-        timer.sendDataToMainFn("add", settings);
-      } else {
-        timer.sendError("No args provided");
-        response = "No args provided";
-      }
       break;
     default:
       response = timer.handleCommand("set", ...args);

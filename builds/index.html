@@ -69,6 +69,14 @@
         let duration = 0; // In minutes
         let isPaused = false;
 
+        const storedDuration = localStorage.getItem('timerDuration') || 0;
+        const storedIsPaused = localStorage.getItem('timerIsPaused') === 'true';
+        duration = parseFloat(storedDuration);
+        isPaused = storedIsPaused;
+
+        timerDisplay.textContent = formatTime(duration);
+
+
         function formatTime(time) {
             if (time <= 0) {
                 return '00:00';
@@ -108,8 +116,14 @@
                 isPaused = true; // Pause after timer ends
                 playTimerEndSound(); // For use in chrome
                 flashFiveTimes();
-                sendMessageToParent(); // For DT
+                payload = {
+                    type: 'message',
+                    request: 'play-sound',
+                }
+                sendMessageToParent(payload); // For DT
             }
+            localStorage.setItem('timerDuration', duration.toString());
+            localStorage.setItem('timerIsPaused', isPaused.toString());
 
         }
 
@@ -124,7 +138,6 @@
         });
 
         const payload = {
-
             type: 'message',
             request: 'play-sound',
         }
@@ -134,6 +147,10 @@
         }
 
         function startPauseTimer() {
+            payload = {
+                type: 'message',
+                request: 'start',
+            }
             if (!timer) {
                 timer = setInterval(updateTimer, 1000);
                 startPauseBtn.textContent = 'Pause';
@@ -141,6 +158,8 @@
                 isPaused = !isPaused;
                 startPauseBtn.textContent = isPaused ? 'Resume' : 'Pause';
             }
+            updateTimer();
+            sendMessageToParent(payload)
         }
 
         function resetTimer() {
@@ -152,7 +171,7 @@
             isPaused = false;
         }
 
-        startPauseBtn.addEventListener('click', startPauseTimer);
+        startPauseBtn.addEventListener('click', startPauseTimer,);
         resetBtn.addEventListener('click', resetTimer);
 
         document.addEventListener('wheel', (event) => {
