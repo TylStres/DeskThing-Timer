@@ -1,0 +1,22 @@
+{
+  "id": "timer",
+  "isAudioSource": false,
+  "isScreenSaver": false,
+  "isWebApp": true,
+  "isLocalApp": false,
+  "requires": [
+    "utility"
+  ],
+  "label": "Timer",
+  "version": "0.8.8",
+  "description": "A simple Timer app for productivity, now recoded from the ground up for v0.8.0",
+  "author": "TheNordicGoat",
+  "platforms": [
+    "windows"
+  ],
+  "homepage": "https://github.com/TylStres/DeskThing-Timer",
+  "repository": "https://github.com/TylStres/DeskThing-Timer",
+  "permissions": [
+    "notifications"
+  ]
+}
